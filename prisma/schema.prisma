@@ -65,9 +65,22 @@ model Equipment {
   store Store @relation("StoreToEquipment", fields: [storeId], references: [id])
   categoryId String
   category Category @relation("CategoryToEquipment", fields: [categoryId], references: [id])
+  files File[] @relation("EquipmentToFile")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
+}
+
+model File {
+  id String @id @default(uuid())
+  fileName String
+  path String
+  equipmentId String
+  equipment Equipment @relation("EquipmentToFile", fields: [equipmentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([equipmentId])
 }

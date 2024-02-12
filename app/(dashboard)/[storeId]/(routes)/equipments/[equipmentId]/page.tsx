@@ -12,7 +12,7 @@ const EquipmentPage = async ({
             id: params.equipmentId,
         }
     });
-
+    console.log(params)
     const categories = await prismadb.category.findMany({
         where: {
             storeId: params.storeId,
