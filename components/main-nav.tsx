@@ -34,9 +34,9 @@ export function MainNav({
             active: pathname === `/${params.storeId}/equipments`,
         },
         {
-            href: `/${params.storeId}/orders`,
-            label: 'Orders',
-            active: pathname === `/${params.storeId}/orders`,
+            href: `/${params.storeId}/calendar`,
+            label: 'Calendar',
+            active: pathname === `/${params.storeId}/calendar`,
         },
         {
             href: `/${params.storeId}/settings`,

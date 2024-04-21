@@ -12,7 +12,7 @@ const EquipmentPage = async ({
             id: params.equipmentId,
         }
     });
-    console.log(params)
+    
     const categories = await prismadb.category.findMany({
         where: {
             storeId: params.storeId,
@@ -25,12 +25,18 @@ const EquipmentPage = async ({
             }
         }
     });
+    const files = await prismadb.file.findMany({
+        where:{
+            equipmentId: params.equipmentId
+        }
+    })
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">
                 <EquipmentForm
                     categories={categories}
                     initialData={equipment}
+                    files={files}
                 />
             </div>
         </div>

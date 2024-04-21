@@ -16,23 +16,20 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Extract file name and create folder path
     const fileName = file.name
     const extension = path.extname(fileName)
     const folderPath = `public/${equipmentId}`
 
-    // Ensure the folder exists
     const fs = require('fs')
     if (!fs.existsSync(folderPath)) {
         fs.mkdirSync(folderPath, { recursive: true })
     }
 
-    // Set the path to save the file inside the folder
     const filePath = `${folderPath}/${name}${extension}`
 
-    // Write the file to the folder
+    const filesPath = `${name}${extension}`
+
     await writeFile(filePath, buffer)
-    console.log(`Open /${filePath} to see the uploaded file`)
 
     const existingName = await prismadb.file.findFirst({
         where:{
@@ -48,26 +45,9 @@ export async function POST(request: NextRequest) {
         data: {
             fileName: name,
             equipmentId,
-            path: filePath
+            path: filesPath
         }
     })
 
     return new NextResponse("Fle uploaded");
-}
-
-export async function GET(request: NextRequest, {params}:{params:{storeId: string}}) {
-    try {
-        if (!params.storeId) {
-            return new NextResponse("Equipment id is required", { status: 400 });
-        }
-
-        const files = await prismadb.file.findMany({
-            
-        });
-
-        return NextResponse.json(files);
-    } catch (error) {
-        console.log('[FILES_GET]', error);
-        return new NextResponse("Internal error", { status: 500 });
-    }
 }

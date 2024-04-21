@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { Trash } from "lucide-react"
-import { Category, Equipment } from "@prisma/client"
+import { Category, Equipment, File } from "@prisma/client"
 import { useParams, useRouter } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
@@ -24,6 +24,10 @@ import { Separator } from "@/components/ui/separator"
 import { Heading } from "@/components/ui/heading"
 import { AlertModal } from "@/components/modals/alert-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Link from "next/link"
+import { DialogModal } from "@/components/modals/dialog-modal"
+import { DataTable } from "@/components/ui/data-table"
+import { ColumnDef } from "@tanstack/react-table"
 
 const formSchema = z.object({
     name: z.string().min(1),
@@ -40,17 +44,20 @@ interface EquipmentFormProps {
         location: {
             name: string;
         };
-    } & Category)[];
+    } & Category)[],
+    files: File[]
 };
 
 export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     initialData,
     categories,
+    files
 }) => {
     const params = useParams();
     const router = useRouter();
 
     const [open, setOpen] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const title = initialData ? 'Edit equipment' : 'Create equipment';
@@ -113,18 +120,28 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                 onConfirm={onDelete}
                 loading={loading}
             />
+            <DialogModal
+                isOpen={openDialog}
+                onClose={() => setOpenDialog(false)}
+                loading={loading}
+            />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
-                {initialData && (
-                    <Button
-                        disabled={loading}
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => setOpen(true)}
-                    >
-                        <Trash className="h-4 w-4" />
+                <div className="flex items-center justify-between">
+                    <Button size="sm" className="mr-5" onClick={()=>setOpenDialog(!openDialog)}>
+                        Add file
                     </Button>
-                )}
+                    {initialData && (
+                        <Button
+                            disabled={loading}
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setOpen(true)}
+                        >
+                            <Trash className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
             </div>
             <Separator />
             <Form {...form}>
@@ -195,8 +212,26 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                     <Button disabled={loading} className="ml-auto" type="submit">
                         {action}
                     </Button>
+                    <Heading title={`Document`} description="Manage documents for your equipment" />
+                    <Separator />
+                    <DataTable searchKey="fileName" columns={columns} data={files}/>
                 </form>
             </Form>
         </>
     );
 };
+
+type FileColumn = {
+    id: string;
+    fileName: string;
+    path: string;
+    equipmentId: string;
+}
+
+const columns: ColumnDef<FileColumn>[] = [
+    {
+        accessorKey: "fileName",
+        header: "File name",
+        cell: ({row}) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
+    }
+];
