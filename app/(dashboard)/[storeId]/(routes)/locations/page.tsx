@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 import prismadb from "@/lib/prismadb";
 import { LocationClient } from "./components/client";
 import { LocationColumn } from "./components/columns";
@@ -21,6 +19,7 @@ const LocationPage = async ({
     const formattedLocations: LocationColumn[] = locations.map((item) => ({
         id: item.id,
         name: item.name,
+        responsiblePerson: item.responsiblePerson
         }));
 
     return (

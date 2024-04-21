@@ -29,6 +29,10 @@ export const columns: ColumnDef<LocationColumn>[] = [
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
+        accessorKey: "responsiblePerson",
+        header: "Responsible person",
+    },
+    {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />
     },

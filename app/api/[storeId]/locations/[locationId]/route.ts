@@ -31,7 +31,7 @@ export async function PATCH(
     try {
         const body = await req.json();
 
-        const { name, id } = body;
+        const { name, id, responsiblePerson } = body;
 
         if (!id) {
             return new NextResponse("Unauthenticated", { status: 403 });
@@ -39,6 +39,10 @@ export async function PATCH(
 
         if (!name) {
             return new NextResponse("Name is required", { status: 400 });
+        }
+
+        if (!responsiblePerson) {
+            return new NextResponse("Responsible person is required", { status: 400 });
         }
 
         if (!params.locationId) {
@@ -50,7 +54,8 @@ export async function PATCH(
                 id: params.locationId,
             },
             data: {
-                name
+                name,
+                responsiblePerson
             }
         });
 

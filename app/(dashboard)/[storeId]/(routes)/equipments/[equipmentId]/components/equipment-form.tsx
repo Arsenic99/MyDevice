@@ -101,8 +101,8 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
         try {
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/equipments/${params.equipmentId}`);
-            router.refresh();
             router.push(`/${params.storeId}/equipments`);
+            router.refresh();
             toast.success('Product deleted.');
         } catch (error: any) {
             toast.error('Something went wrong.');
@@ -200,7 +200,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                                         </FormControl>
                                         <SelectContent>
                                             {categories.slice().sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
-                                                <SelectItem key={category.id} value={category.id}>{`${category.name} ${category.location.name}`}</SelectItem>
+                                                <SelectItem key={category.id} value={category.id}>{`Category: ${category.name} / Location: ${category.location.name}`}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -226,6 +226,7 @@ type FileColumn = {
     fileName: string;
     path: string;
     equipmentId: string;
+    createdAt: Date;
 }
 
 const columns: ColumnDef<FileColumn>[] = [
@@ -233,5 +234,9 @@ const columns: ColumnDef<FileColumn>[] = [
         accessorKey: "fileName",
         header: "File name",
         cell: ({row}) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
+    },
+    {
+        accessorKey: "createdAt",
+        header: "Created at",
     }
 ];

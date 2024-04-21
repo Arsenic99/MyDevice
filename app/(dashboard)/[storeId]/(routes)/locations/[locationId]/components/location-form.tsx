@@ -25,7 +25,8 @@ import { Heading } from "@/components/ui/heading"
 import { AlertModal } from "@/components/modals/alert-modal"
 
 const formSchema = z.object({
-    name: z.string().min(1)
+    name: z.string().min(1),
+    responsiblePerson: z.string().min(1)
 });
 
 type LocationFormValues = z.infer<typeof formSchema>
@@ -52,6 +53,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
             name: '',
+            responsiblePerson: ''
         }
     });
 
@@ -64,8 +66,8 @@ export const LocationForm: React.FC<LocationFormProps> = ({
             } else {
                 await axios.post(`/api/${params.storeId}/locations`, {...data, id});
             }
-            router.refresh();
             router.push(`/${params.storeId}/locations`);
+            router.refresh();
             toast.success(toastMessage);
         } catch (error: any) {
             toast.error('Something went wrong.');
@@ -122,6 +124,19 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input disabled={loading} placeholder="Location label" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="responsiblePerson"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Responsible person</FormLabel>
+                                    <FormControl>
+                                        <Input disabled={loading} placeholder="Location responsible person" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

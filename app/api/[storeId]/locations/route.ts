@@ -5,7 +5,7 @@ export async function POST(req: Request, { params }: { params: { storeId: string
     try {
         const body = await req.json();
 
-        const { name, id } = body;
+        const { name, id, responsiblePerson } = body;
 
         if (!id) {
             return new NextResponse("Unauthorized", { status: 401 });
@@ -15,6 +15,10 @@ export async function POST(req: Request, { params }: { params: { storeId: string
             return new NextResponse("Name is required", { status: 400 });
         }
 
+        if (!responsiblePerson) {
+            return new NextResponse("Responsible person is required", { status: 400 });
+        }
+
         if (!params.storeId) {
             return new NextResponse("Store id is required", { status: 400 });
         }
@@ -22,6 +26,7 @@ export async function POST(req: Request, { params }: { params: { storeId: string
         const location = await prismadb.location.create({
             data: {
                 name,
+                responsiblePerson,
                 storeId: params.storeId
             }
         })

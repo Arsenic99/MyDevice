@@ -35,6 +35,7 @@ export const CellAction: React.FC<CellActionProps> = ({
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/locations/${data.id}`);
             toast.success('Location deleted.');
+            router.push(`/${params.storeId}/locations`);
             router.refresh();
         } catch (error) {
             toast.error('Make sure you removed all categories using this location first.');

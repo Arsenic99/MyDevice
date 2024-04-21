@@ -4,14 +4,13 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button";
 import axios from "axios";
 import Link from "next/link";
 
 const DashboardPage = async () => {
-    const locations = await axios.get(`${process.env.URL}/api/71e79fe3-e876-4e50-80a5-3c07ff1d970b/locations`);
-    const categories = await axios.get(`${process.env.URL}/api/71e79fe3-e876-4e50-80a5-3c07ff1d970b/categories`);
-    const equipments = await axios.get(`${process.env.URL}/api/71e79fe3-e876-4e50-80a5-3c07ff1d970b/equipments`);
+    const locations = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/locations`);
+    const categories = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/categories`);
+    const equipments = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/equipments`);
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">

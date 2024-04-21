@@ -111,10 +111,6 @@ export async function PATCH(
             data: {
             },
         })
-        const file = await prismadb.file.findMany({
-            
-        })
-        console.log('file', file)
         return NextResponse.json(equipment);
     } catch (error) {
         console.log('[EQUIPMENT_PATCH]', error);
