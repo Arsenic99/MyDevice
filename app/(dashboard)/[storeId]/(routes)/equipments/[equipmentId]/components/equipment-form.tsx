@@ -28,6 +28,7 @@ import Link from "next/link"
 import { DialogModal } from "@/components/modals/dialog-modal"
 import { DataTable } from "@/components/ui/data-table"
 import { ColumnDef } from "@tanstack/react-table"
+import { EventModal } from "@/components/modals/event-modal"
 
 const formSchema = z.object({
     name: z.string().min(1),
@@ -58,6 +59,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
 
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openEvent, setOpenEvent] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const title = initialData ? 'Edit equipment' : 'Create equipment';
@@ -125,11 +127,19 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                 onClose={() => setOpenDialog(false)}
                 loading={loading}
             />
+            <EventModal
+                isOpen={openEvent}
+                onClose={() => setOpenEvent(false)}
+                loading={loading}
+            />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
                 <div className="flex items-center justify-between">
                     <Button size="sm" className="mr-5" onClick={()=>setOpenDialog(!openDialog)}>
                         Add file
+                    </Button>
+                    <Button size="sm" className="mr-5" onClick={()=>setOpenEvent(!openEvent)}>
+                        Add event
                     </Button>
                     {initialData && (
                         <Button
