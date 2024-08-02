@@ -3,9 +3,17 @@
 import { useRouter } from 'next/navigation';
 import React, { createContext, useEffect, useState } from 'react';
 
+interface Token {
+    id: string,
+    email: string,
+    password: string,
+    createdAt: string,
+    updatedAt: string
+}
+
 export const AuthContext = createContext({
     isAuthenticated: false,
-    login: (user:any) => { },
+    login: (user:Token) => { },
     logout: () => { },
 });
 
@@ -20,14 +28,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     },[])
 
-    const login = (user:any) => {
-        console.log(user)
-        localStorage.setItem('token_key', JSON.stringify(user))
+    const login = (user:Token) => {
+        localStorage.setItem('token_key', JSON.stringify({id: user.id, email: user.email}))
         setIsAuthenticated(true);
     };
     const logout = () => {
         localStorage.removeItem('token_key')
         setIsAuthenticated(false);
+        router.push('/login')
     };
 
     return (

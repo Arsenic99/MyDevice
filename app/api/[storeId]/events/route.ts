@@ -29,7 +29,7 @@ export async function POST(
         }
 
         if (!equipmentId) {
-            return new NextResponse("Start day is required", { status: 400 });
+            return new NextResponse("Equipment id is required", { status: 400 });
         }
 
         if (!params.storeId) {

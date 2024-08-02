@@ -12,7 +12,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
-import prismadb from '@/lib/prismadb'
 import axios from 'axios'
 
 const formSchema = z.object({
@@ -37,7 +36,6 @@ const Login = () => {
         try {
             setLoading(true);
             const responce = await axios.post('api/auth', values)
-            console.log(responce)
             if(!responce.data)
             {
                 toast.error('Wrong email or password');
@@ -48,7 +46,6 @@ const Login = () => {
                 router.push('/');
             }
         } catch (error) {
-            console.log(error)
             toast.error('Something went wrong');
         } finally {
             setLoading(false);
