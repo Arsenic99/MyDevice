@@ -3,18 +3,15 @@
 import { useEffect, useState } from "react";
 import Search from "./ui/search";
 import axios from "axios";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export const SearchBar = ({
-    params
-}: {
-    params: string;
-}) => {
+export const SearchBar = () => {
 
     const [input, setInput] = useState('');
     const router = useRouter();
     const url = usePathname();
+    const params = useParams()
 
     useEffect(()=>{
         setInput('');
@@ -25,7 +22,7 @@ export const SearchBar = ({
         if (input.trim().length === 0) return;
 
         try {
-            const equipment = await axios.get(`/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/equipments/serialNumber`, {
+            const equipment = await axios.get(`/api/${params.storeId}/equipments/serialNumber`, {
                 params: { serialNumber: input.trim() }
             });
 

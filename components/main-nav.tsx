@@ -15,32 +15,32 @@ export function MainNav({
     const routes = [
         {
             href: `/${params.storeId}`,
-            label: 'Overview',
+            label: 'Обзор',
             active: pathname === `/${params.storeId}`,
         },
         {
             href: `/${params.storeId}/locations`,
-            label: 'Locations',
+            label: 'Объекты',
             active: pathname === `/${params.storeId}/locations`,
         },
         {
             href: `/${params.storeId}/categories`,
-            label: 'Categories',
+            label: 'Категории',
             active: pathname === `/${params.storeId}/categories`,
         },
         {
             href: `/${params.storeId}/equipments`,
-            label: 'Equipments',
+            label: 'Оборудования',
             active: pathname === `/${params.storeId}/equipments`,
         },
         {
             href: `/${params.storeId}/calendar`,
-            label: 'Calendar',
+            label: 'Календарь',
             active: pathname === `/${params.storeId}/calendar`,
         },
         {
             href: `/${params.storeId}/settings`,
-            label: 'Settings',
+            label: 'Настройки',
             active: pathname === `/${params.storeId}/settings`,
         },
     ]

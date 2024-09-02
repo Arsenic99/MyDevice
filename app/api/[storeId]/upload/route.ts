@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
             equipmentId,
             path: filesPath,
             time,
-            timeFrom: timeFrom ? new Date(Date.parse(timeFrom)).toISOString().substring(0, 10) : '',
-            timeTo: timeTo ? new Date(Date.parse(timeTo)).toISOString().substring(0, 10) : ''
+            timeFrom: timeFrom ? new Date(timeFrom).toString() : '',
+            timeTo: timeTo ? new Date(timeTo).toString() : ''
         }
     })
 

@@ -64,10 +64,10 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     const [openEvent, setOpenEvent] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const title = initialData ? 'Edit equipment' : 'Create equipment';
-    const description = initialData ? 'Edit a equipment' : 'Add a new equipment';
-    const toastMessage = initialData ? 'Equipment updated.' : 'Equipment created.';
-    const action = initialData ? 'Save changes' : 'Create';
+    const title = initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудование';
+    const description = initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудования';
+    const toastMessage = initialData ? 'Данные обновлены.' : 'Оборудование добавлено.';
+    const action = initialData ? 'Сохранить изменения' : 'Добавить';
 
     const defaultValues = initialData ? {
         ...initialData,
@@ -137,15 +137,18 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
                 <div className="flex items-center justify-between gap-5">
-                    <Button size="sm" onClick={() => setOpenDialog(!openDialog)}>
-                        Add file
-                    </Button>
+                    {
+                        initialData && <Button size="sm" onClick={() => setOpenDialog(!openDialog)}>
+                            Добавить файл
+                        </Button>
+                    }
+
                     {
                         initialData && <Button size="sm" onClick={() => setOpenEvent(!openEvent)}>
-                                            Add event
-                                        </Button>
+                            Добавить событие
+                        </Button>
                     }
-                    
+
                     {initialData && (
                         <Button
                             disabled={loading}
@@ -167,9 +170,9 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>Наименование</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Product name" {...field} />
+                                        <Input disabled={loading} placeholder="Наименование оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -180,9 +183,9 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             name="serialNumber"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Serial Number</FormLabel>
+                                    <FormLabel>Серийный номер</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Product serial number" {...field} />
+                                        <Input disabled={loading} placeholder="Серийный номер оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -193,9 +196,9 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             name="inventoryNumber"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Inventory Number</FormLabel>
+                                    <FormLabel>Инвентарный номер</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Product inventory number" {...field} />
+                                        <Input disabled={loading} placeholder="Инвентарный номер оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -206,16 +209,16 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             name="categoryId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Category</FormLabel>
+                                    <FormLabel>Категория</FormLabel>
                                     <Select disabled={loading} onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue defaultValue={field.value} placeholder="Select a category" />
+                                                <SelectValue defaultValue={field.value} placeholder="Выберите категорию" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             {categories.slice().sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
-                                                <SelectItem key={category.id} value={category.id}>{`Category: ${category.name} / Location: ${category.location.name}`}</SelectItem>
+                                                <SelectItem key={category.id} value={category.id}>{`Категория: ${category.name} / Объект: ${category.location.name}`}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -259,6 +262,18 @@ type FileColumn = {
     timeTo: string;
 }
 
+const handleClick = async (id: string, equipmentId: string, fileName: string) => {
+    try {
+        await axios.delete(`/api/f065a399-bef3-4b56-8215-d3c05758facc/upload/${equipmentId}/${id}/${fileName}`);
+        toast.success("Файл успешно удален");
+        location.reload();
+    } catch (error) {
+        console.log(error);
+        toast.error("Ошибка при удалении файла");
+    }
+
+}
+
 const columns: ColumnDef<FileColumn>[] = [
     {
         accessorKey: "fileName",
@@ -272,6 +287,11 @@ const columns: ColumnDef<FileColumn>[] = [
     {
         accessorKey: "timeTo",
         header: "Дата истечения",
+    },
+    {
+        accessorKey: "id",
+        header: '',
+        cell: ({ row }) => <Button type="button" variant={'destructive'} size={'sm'} onClick={() => handleClick(row.original.id, row.original.equipmentId, row.original.path)}><Trash className="h-4 w-4" /></Button>
     }
 ];
 
@@ -285,10 +305,10 @@ type EventColumn = {
 const eventColumns: ColumnDef<EventColumn>[] = [
     {
         accessorKey: "title",
-        header: "Title",
+        header: "Наименование",
     },
     {
         accessorKey: "createdAt",
-        header: "Created at",
+        header: "Дата создания",
     }
 ];

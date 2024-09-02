@@ -13,7 +13,7 @@ export default function Search({
     return (
         <form onSubmit={(e:any)=>submitHandler(e)} className="flex items-center ml-auto w-full max-w-sm space-x-2 rounded-lg border border-gray-300 bg-gray-50 dark:bg-gray-900 pl-2 py-1">
             <SearchIcon className="h-4 w-4 cursor-pointer" onClick={(e:any)=>submitHandler(e)}/>
-            <Input type="search" placeholder="Search by serial number" className="w-full border-0 h-8 font-semibold focus:outline-none" value={input} onChange={(e:any)=>setInput(e.target.value)}/>
+            <Input type="search" placeholder="Поиск по серийному номеру" className="w-full border-0 h-8 font-semibold focus:outline-none" value={input} onChange={(e:any)=>setInput(e.target.value)}/>
         </form>
     )
 }

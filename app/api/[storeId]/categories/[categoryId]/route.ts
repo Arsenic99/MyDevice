@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
+import {DELETE as DELETEEQUIPMENT} from '../../equipments/[equipmentId]/route'
+
 import prismadb from "@/lib/prismadb";
+import axios from "axios";
 
 export async function GET(
     req: Request,
@@ -45,6 +48,18 @@ export async function DELETE(
 
         if (!storeByUserId) {
             return new NextResponse("Unauthorized", { status: 405 });
+        }
+
+        const equipments = await prismadb.equipment.findMany({
+            where:{
+                categoryId: params.categoryId
+            }
+        })
+
+        const equipmentIds = equipments.map(equipment=>equipment.id)
+
+        for (const equipmentId of equipmentIds) {
+            await DELETEEQUIPMENT(req, { params: { equipmentId, storeId: params.storeId } });
         }
 
         const category = await prismadb.category.delete({

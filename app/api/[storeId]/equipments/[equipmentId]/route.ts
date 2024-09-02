@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-
+import { unlink, rm } from 'fs/promises'
 import prismadb from "@/lib/prismadb";
 
 export async function GET(
@@ -46,6 +46,59 @@ export async function DELETE(
         if (!storeByUserId) {
             return new NextResponse("Unauthorized", { status: 405 });
         }
+
+        const files = await prismadb.file.findMany({
+            where:{
+                equipmentId: params.equipmentId
+            }
+        })
+
+        const fileNames = files.map(file=>file.path)
+        const folderPath = `public/${params.equipmentId}`
+
+        for (const fileName of fileNames) {
+            const filePath = `${folderPath}/${fileName}`;
+            await unlink(filePath);
+        }    
+        
+        const fs = require('fs')
+        if(fs.existsSync(folderPath))
+        try{
+            const filesInFolder = fs.readdirSync(folderPath)
+            if (filesInFolder.length === 0) {
+                await rm(folderPath, { recursive: true, force: true })
+            }
+        } catch(error){
+            console.log("error", error)
+        }
+
+        await prismadb.file.deleteMany({
+            where:{
+                equipmentId: params.equipmentId
+            }
+        })
+
+        const events = await prismadb.event.findMany({
+            where: {
+                equipmentId: params.equipmentId
+            }
+        })
+
+        const eventIds = events.map(event => event.id);
+
+        await prismadb.recurrenceRule.deleteMany({
+            where: {
+                eventId: {
+                    in: eventIds
+                }
+            }
+        });
+
+        await prismadb.event.deleteMany({
+            where:{
+                equipmentId: params.equipmentId
+            }
+        })
 
         const equipment = await prismadb.equipment.delete({
             where: {
