@@ -84,6 +84,10 @@ export const DialogModal: React.FC<DialogModalProps> = ({
                         <Label htmlFor="file" className='mr-5 text-right'>File</Label>
                         <Input type="file" className="col-span-3" name='file' ref={fileInputRef} onChange={(e) => setFile(e.target.files?.[0])} />
                     </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="file" className='mr-5 text-right'>File</Label>
+                        <Input type="file" className="col-span-3" name='file' ref={fileInputRef} onChange={(e) => setFile(e.target.files?.[0])} />
+                    </div>
                 </div>
                 <div className="flex justify-end items-center">
                     <Button type='submit' disabled={loading}>

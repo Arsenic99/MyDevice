@@ -8,9 +8,9 @@ import axios from "axios";
 import Link from "next/link";
 
 const DashboardPage = async () => {
-    const locations = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/locations`);
-    const categories = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/categories`);
-    const equipments = await axios.get(`${process.env.URL}/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/equipments`);
+    const locations = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/locations`);
+    const categories = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/categories`);
+    const equipments = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/equipments`);
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">

@@ -81,3 +81,8 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+/* Курсор события */
+.fc-event{
+  cursor: pointer;
+}

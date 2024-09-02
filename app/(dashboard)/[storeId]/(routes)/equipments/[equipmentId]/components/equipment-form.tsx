@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { Trash } from "lucide-react"
-import { Category, Equipment, File } from "@prisma/client"
+import { Category, Equipment, Event, File } from "@prisma/client"
 import { useParams, useRouter } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
@@ -46,13 +46,15 @@ interface EquipmentFormProps {
             name: string;
         };
     } & Category)[],
-    files: File[]
+    files: File[],
+    events: Event[]
 };
 
 export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     initialData,
     categories,
-    files
+    files,
+    events
 }) => {
     const params = useParams();
     const router = useRouter();
@@ -63,7 +65,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     const [loading, setLoading] = useState(false);
 
     const title = initialData ? 'Edit equipment' : 'Create equipment';
-    const description = initialData ? 'Edit a equipment.' : 'Add a new equipment';
+    const description = initialData ? 'Edit a equipment' : 'Add a new equipment';
     const toastMessage = initialData ? 'Equipment updated.' : 'Equipment created.';
     const action = initialData ? 'Save changes' : 'Create';
 
@@ -134,13 +136,16 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
             />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
-                <div className="flex items-center justify-between">
-                    <Button size="sm" className="mr-5" onClick={()=>setOpenDialog(!openDialog)}>
+                <div className="flex items-center justify-between gap-5">
+                    <Button size="sm" onClick={() => setOpenDialog(!openDialog)}>
                         Add file
                     </Button>
-                    <Button size="sm" className="mr-5" onClick={()=>setOpenEvent(!openEvent)}>
-                        Add event
-                    </Button>
+                    {
+                        initialData && <Button size="sm" onClick={() => setOpenEvent(!openEvent)}>
+                                            Add event
+                                        </Button>
+                    }
+                    
                     {initialData && (
                         <Button
                             disabled={loading}
@@ -222,9 +227,23 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                     <Button disabled={loading} className="ml-auto" type="submit">
                         {action}
                     </Button>
-                    <Heading title={`Document`} description="Manage documents for your equipment" />
-                    <Separator />
-                    <DataTable searchKey="fileName" columns={columns} data={files}/>
+
+
+                    {
+                        initialData && (
+                            <>
+                                {/* Таблица документации */}
+                                <Heading title={`Документация`} description="Список документации оборудования" />
+                                <Separator />
+                                <DataTable searchKey="fileName" columns={columns} data={files} />
+
+                                {/* Таблица событии */}
+                                <Heading title={`События`} description="Список ремонта и ТО" />
+                                <Separator />
+                                <DataTable searchKey="title" columns={eventColumns} data={events} />
+                            </>
+                        )
+                    }
                 </form>
             </Form>
         </>
@@ -243,7 +262,25 @@ const columns: ColumnDef<FileColumn>[] = [
     {
         accessorKey: "fileName",
         header: "File name",
-        cell: ({row}) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
+        cell: ({ row }) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
+    },
+    {
+        accessorKey: "createdAt",
+        header: "Created at",
+    }
+];
+
+type EventColumn = {
+    id: string;
+    title: string;
+    equipmentId: string;
+    createdAt: Date;
+}
+
+const eventColumns: ColumnDef<EventColumn>[] = [
+    {
+        accessorKey: "title",
+        header: "Title",
     },
     {
         accessorKey: "createdAt",

@@ -57,8 +57,8 @@ export async function POST(
                 eventId: event.id,
                 freq: freq ? freq : 'daily',
                 interval: Number(interval) ? Number(interval) : 1,
-                dtstart: new Date(Date.parse(startDay)).toISOString(),
-                until: endDay ? new Date(Date.parse(endDay)).toISOString() : '',
+                dtstart: new Date(Date.parse(startDay)).toISOString().substring(0, 10),
+                until: endDay ? new Date(Date.parse(endDay)).toISOString().substring(0, 10) : '',
             }
         })
 
@@ -81,7 +81,8 @@ export async function GET(
         const events = await prismadb.event.findMany({
             select:{
                 id: true,
-                title: true
+                title: true,
+                equipmentId: true
             }
         });
 

@@ -25,6 +25,11 @@ const EquipmentPage = async ({
             }
         }
     });
+    const events = await prismadb.event.findMany({
+        where:{
+            equipmentId: params.equipmentId
+        }
+    })
     const files = await prismadb.file.findMany({
         where:{
             equipmentId: params.equipmentId
@@ -37,6 +42,7 @@ const EquipmentPage = async ({
                     categories={categories}
                     initialData={equipment}
                     files={files}
+                    events={events}
                 />
             </div>
         </div>

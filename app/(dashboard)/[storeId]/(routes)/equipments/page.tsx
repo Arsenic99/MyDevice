@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 import prismadb from "@/lib/prismadb";
 
 import { EquipmentsClient } from "./components/client";

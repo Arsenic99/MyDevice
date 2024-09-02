@@ -2,6 +2,7 @@ import { MainNav } from "@/components/main-nav";
 import StoreSwitcher from "@/components/store-switcher";
 import prismadb from "@/lib/prismadb";
 import { UserPanel } from "./user-panel";
+import { SearchBar } from "./searchbar";
 
 const Navbar = async () => {
 
@@ -12,6 +13,7 @@ const Navbar = async () => {
             <div className="flex h-16 items-center px-4">
                 <StoreSwitcher items={stores} />
                 <MainNav className="mx-6" />
+                <SearchBar/>
                 <UserPanel/>
             </div>
         </div>

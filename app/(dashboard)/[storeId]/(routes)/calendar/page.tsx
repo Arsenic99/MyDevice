@@ -7,11 +7,16 @@ import interactionPlugin from "@fullcalendar/interaction"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const CalendarPage = () => {
     const [event, setEvent] = useState();
+    const router = useRouter()
+    const clickHandler = (event:any) => {
+        router.push('./event?equipmentId='+event.event.extendedProps.equipmentId+'&&eventId='+event.event.id);
+    }
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async () => { // фетч событии из сервера
             try {
                 const event = await axios.get(`/api/99637b7f-79f9-497c-b3ef-6c8bf09ab514/events`);
                 setEvent(event.data);
@@ -35,7 +40,8 @@ const CalendarPage = () => {
                     }}
                     height={'80vh'}
                     events={event}
-                    editable={true}
+                    editable={false}
+                    eventClick={(event)=>clickHandler(event)}
                 />
             </div>
         </div>
