@@ -8,6 +8,9 @@ export async function POST(request: NextRequest) {
     const file: File | null = data.get('file') as unknown as File
     const equipmentId: string | null = data.get('equipmentId') as unknown as string
     const name: string | null = data.get('name') as unknown as string
+    const time: string | null = data.get('time') as unknown as string
+    const timeFrom: string | null = data.get('timeFrom') as unknown as string
+    const timeTo: string | null = data.get('timeTo') as unknown as string
 
     if (!file) {
         return NextResponse.json({ success: false })
@@ -45,7 +48,10 @@ export async function POST(request: NextRequest) {
         data: {
             fileName: name,
             equipmentId,
-            path: filesPath
+            path: filesPath,
+            time,
+            timeFrom: timeFrom ? new Date(Date.parse(timeFrom)).toISOString().substring(0, 10) : '',
+            timeTo: timeTo ? new Date(Date.parse(timeTo)).toISOString().substring(0, 10) : ''
         }
     })
 

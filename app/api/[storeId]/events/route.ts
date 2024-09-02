@@ -52,7 +52,7 @@ export async function POST(
             },
         });
 
-        const rrule = await prismadb.recurrenceRule.create({
+        await prismadb.recurrenceRule.create({
             data: {
                 eventId: event.id,
                 freq: freq ? freq : 'daily',

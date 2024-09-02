@@ -256,17 +256,22 @@ type FileColumn = {
     path: string;
     equipmentId: string;
     createdAt: Date;
+    timeTo: string;
 }
 
 const columns: ColumnDef<FileColumn>[] = [
     {
         accessorKey: "fileName",
-        header: "File name",
+        header: "Наименование",
         cell: ({ row }) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
     },
     {
         accessorKey: "createdAt",
-        header: "Created at",
+        header: "Дата загрузки",
+    },
+    {
+        accessorKey: "timeTo",
+        header: "Дата истечения",
     }
 ];
 

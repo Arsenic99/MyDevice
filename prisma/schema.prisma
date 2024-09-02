@@ -80,6 +80,9 @@ model File {
   fileName String
   path String
   equipmentId String
+  time String
+  timeFrom String
+  timeTo String
   equipment Equipment @relation("EquipmentToFile", fields: [equipmentId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
