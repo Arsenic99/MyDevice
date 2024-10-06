@@ -11,12 +11,20 @@ import { ApiList } from "@/components/ui/api-list";
 
 import { WorkOrderColumn, columns } from "./columns";
 
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+
 interface WorkOrdersClientProps {
     data: WorkOrderColumn[];
+    name: NameProps | null
 };
 
+interface NameProps {
+    name: string;
+}
+
 export const WorkOrdersClient: React.FC<WorkOrdersClientProps> = ({
-    data
+    data,
+    name
 }) => {
     const params = useParams();
     const equipmentId = useSearchParams().get('equipmentId')
@@ -29,6 +37,21 @@ export const WorkOrdersClient: React.FC<WorkOrdersClientProps> = ({
                     <Plus className="mr-2 h-4 w-4" /> Добавить новый
                 </Button>
             </div>
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments/${equipmentId}`}>{name?.name}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Заказ-наряды</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <Separator />
             <DataTable searchKey="name" columns={columns} data={data} />
             <Heading title="API" description="API Calls for Work Orders" />

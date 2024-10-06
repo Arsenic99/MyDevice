@@ -33,6 +33,7 @@ import { Label } from "@/components/ui/label"
 import { EditModal } from "@/components/modals/edit-modal"
 import { DataTable } from "@/components/ui/data-table"
 import { defectActColumns } from "../(defectacts)/components/columns"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 const formSchema = z.object({
     name: z.string().min(2),
@@ -44,17 +45,16 @@ const formSchema = z.object({
 type WorkOrderFormValues = z.infer<typeof formSchema>
 
 interface WorkOrderFormProps {
-    initialData: WorkOrder | null;
+    initialData: WorkOrder & {equipment: {name:string}} | null;
     defectActs: DefectAct[];
 };
 
 export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     initialData,
-    defectActs
+    defectActs,
 }) => {
     const params = useParams();
     const equipmentId = useSearchParams().get('equipmentId');
-    console.log(equipmentId)
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -160,6 +160,27 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                     </div>
                 }
             </div>
+            {
+                initialData && <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments/${equipmentId}`}>{initialData?.equipment?.name}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/workorders?equipmentId=${initialData.equipmentId}`}>Заказ-наряд</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>{initialData.name}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            }
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">

@@ -14,9 +14,10 @@ import { AlertModal } from "@/components/modals/alert-modal"
 import { defectColumns } from "./(defects)/components/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { DefectModal } from "@/components/modals/defect-modal"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 interface DefectActFormProps {
-    initialData: DefectAct | null;
+    initialData: DefectAct & {workOrder:{equipment:{name:string, id:string}}&{name:string}} | null;
     defects: Defect[];
 };
 
@@ -63,7 +64,6 @@ export const DefectActForm: React.FC<DefectActFormProps> = ({
             router.refresh();
             toast.success('Work order deleted.');
         } catch (error: any) {
-            console.log(params)
             toast.error('Make sure you removed all products using this Defect Act first.');
         } finally {
             setLoading(false);
@@ -108,6 +108,31 @@ export const DefectActForm: React.FC<DefectActFormProps> = ({
                     </Button>
                 }
             </div>
+            {
+                initialData && <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments/${initialData?.workOrder?.equipment?.id}`}>{initialData?.workOrder?.equipment?.name}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/workorders?equipmentId=${initialData?.workOrder?.equipment?.id}`}>Заказ-наряд</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/workorders/${initialData.workOrderId}?equipmentId=${initialData?.workOrder?.equipment?.id}`}>{initialData?.workOrder?.name}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Дефектный акт</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            }
             <Separator />
             <div>
                 <span>ID</span>

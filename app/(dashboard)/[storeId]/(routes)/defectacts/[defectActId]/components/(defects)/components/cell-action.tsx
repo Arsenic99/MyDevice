@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useState } from "react";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 
@@ -23,19 +23,20 @@ interface CellActionProps {
 }
 
 export const CellAction: React.FC<CellActionProps> = ({
-    data,
+    data
 }) => {
     const router = useRouter();
     const params = useParams();
     const [open, setOpen] = useState(false);
+    const [openDefect, setOpenDefect] = useState(false)
     const [loading, setLoading] = useState(false);
 
     const onConfirm = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/${params.storeId}/DefectActs/${data.id}`);
-            toast.success('DefectAct deleted.');
-            router.push(`/${params.storeId}/DefectActs`);
+            await axios.delete(`/api/${params.storeId}/defects/${data.id}`);
+            toast.success('Defect deleted.');
+            router.push(`/${params.storeId}/defectacts/${params.defectActId}`);
             router.refresh();
         } catch (error) {
             toast.error('Make sure you removed all categories using this DefectAct first.');
@@ -44,11 +45,6 @@ export const CellAction: React.FC<CellActionProps> = ({
             setLoading(false);
         }
     };
-
-    const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id);
-        toast.success('DefectAct ID copied to clipboard.');
-    }
 
     return (
         <>
@@ -68,12 +64,8 @@ export const CellAction: React.FC<CellActionProps> = ({
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem
-                        onClick={() => onCopy(data.id)}
-                    >
-                        <Copy className="mr-2 h-4 w-4" /> Copy Id
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={() => router.push(`/${params.storeId}/defectacts/${data.id}`)}
+                        onClick={() => {}}
+                        disabled
                     >
                         <Edit className="mr-2 h-4 w-4" /> Update
                     </DropdownMenuItem>

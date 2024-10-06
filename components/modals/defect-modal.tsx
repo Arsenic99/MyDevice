@@ -19,7 +19,6 @@ export const DefectModal: React.FC<DefectModalProps> = ({
     isOpen,
     onClose,
     onConfirm,
-    loading,
 }) => {
     const [isMounted, setIsMounted] = useState(false);
     const [defect, setDefect] = useState({
@@ -27,7 +26,6 @@ export const DefectModal: React.FC<DefectModalProps> = ({
         reason: '',
         correctiveAction: ''
     })
-
     useEffect(() => {
         setIsMounted(true);
     }, []);

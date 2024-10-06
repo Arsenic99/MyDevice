@@ -34,6 +34,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { EditModal } from "@/components/modals/edit-modal"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 const formSchema = z.object({
     name: z.string().min(1),
@@ -72,7 +73,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     const [edit, setEdit] = useState(initialData ? false : true);
 
     const title = !edit ? "Паспортные данные оборудования" : initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудование';
-    const description = !edit ? "Паспортные данные оборудования" : initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудования';
+    const description = '';
     const toastMessage = initialData ? 'Данные обновлены.' : 'Оборудование добавлено.';
     const action = initialData ? 'Сохранить изменения' : 'Добавить';
     const defaultValues = initialData ? {
@@ -119,7 +120,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
         }
     };
 
-    const onSubmitEvent = async (event:any, params:any) => { //function to submit event data
+    const onSubmitEvent = async (event: any, params: any) => { //function to submit event data
         if (!event.title || !event.frequency || !event.startDay) return toast.error("Fill blanks");
         try {
             const data = new FormData()
@@ -173,7 +174,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                 isOpen={openEvent}
                 onClose={() => setOpenEvent(false)}
                 loading={loading}
-                onConfirm={(event)=>onSubmitEvent(event, params)}
+                onConfirm={(event) => onSubmitEvent(event, params)}
             />
             <EditModal // Modal to confirm equipment edit
                 isOpen={openEdit}
@@ -229,6 +230,20 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                     }
                 </div>
             </div>
+            {
+                initialData && <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>{initialData.name}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            }
+
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
@@ -295,10 +310,10 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             )}
                         />
                         {
-                            initialData &&  <div>
-                                                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">QR Код</span>
-                                                <GenerateQR serialNumber={`/${params.storeId}/equipments/${params.equipmentId}`} />
-                                            </div>
+                            initialData && <div>
+                                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">QR Код</span>
+                                <GenerateQR serialNumber={`/${params.storeId}/equipments/${params.equipmentId}`} />
+                            </div>
 
                         }
                     </div>
@@ -355,7 +370,7 @@ const columns: ColumnDef<FileColumn>[] = [
     {
         accessorKey: "fileName",
         header: "Наименование",
-        cell: ({ row }) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={true}>{row.original.fileName}</Link>
+        cell: ({ row }) => <Link className="w-full" target="_blank" href={`http://localhost:3000/${row.original.equipmentId}/${row.original.path}`} download={false}>{row.original.fileName}</Link>
     },
     {
         accessorKey: "createdAt",

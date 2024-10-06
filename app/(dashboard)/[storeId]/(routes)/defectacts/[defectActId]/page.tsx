@@ -10,6 +10,19 @@ const DefectActIdPage = async ({
     const defectAct = await prismadb.defectAct.findUnique({
         where: {
             id: params.defectActId
+        },
+        include:{
+            workOrder:{
+                select:{
+                    equipment:{
+                        select:{
+                            name: true,
+                            id: true
+                        }
+                    },
+                    name: true
+                },
+            }
         }
     })
 

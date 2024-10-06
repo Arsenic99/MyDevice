@@ -9,6 +9,13 @@ const WorkOrderPage = async ({
     const workOrder = await prismadb.workOrder.findUnique({
         where: {
             id: params.workOrderId
+        },
+        include:{
+            equipment:{
+                select: {
+                    name:true
+                }
+            }
         }
     });
 
@@ -21,7 +28,7 @@ const WorkOrderPage = async ({
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">
-                <WorkOrderForm initialData={workOrder} defectActs={defectActs}/>
+                <WorkOrderForm initialData={workOrder} defectActs={defectActs} />
             </div>
         </div>
     );
