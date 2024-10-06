@@ -5,6 +5,8 @@ import Search from "./ui/search";
 import axios from "axios";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { ReadQRModal } from "./modals/readqr-modal";
+import { QrCode } from "lucide-react";
 
 export const SearchBar = () => {
 
@@ -13,9 +15,16 @@ export const SearchBar = () => {
     const url = usePathname();
     const params = useParams()
 
-    useEffect(()=>{
+    const [open, setOpen] = useState(false);
+
+    const onClose = () => {
+        setOpen(false);
+        window.location.reload();
+    }
+
+    useEffect(() => {
         setInput('');
-    },[url])
+    }, [url])
 
     const submitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -38,6 +47,15 @@ export const SearchBar = () => {
     };
 
     return (
-        <Search input={input} setInput={(input: any) => setInput(input)} submitHandler={submitHandler} />
+        <>
+            <ReadQRModal
+                isOpen={open}
+                onClose={onClose}
+            />
+            <button onClick={()=>setOpen(true)}>
+                <QrCode className="h-5 w-5 mr-2" />
+            </button>
+            <Search input={input} setInput={(input: any) => setInput(input)} submitHandler={submitHandler}/>
+        </>
     );
 };

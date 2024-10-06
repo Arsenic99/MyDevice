@@ -78,6 +78,12 @@ export async function DELETE(
             }
         })
 
+        await prismadb.workOrder.deleteMany({
+            where:{
+                equipmentId: params.equipmentId
+            }
+        })
+
         const events = await prismadb.event.findMany({
             where: {
                 equipmentId: params.equipmentId

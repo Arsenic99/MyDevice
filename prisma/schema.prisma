@@ -68,6 +68,7 @@ model Equipment {
   category Category @relation("CategoryToEquipment", fields: [categoryId], references: [id])
   files File[] @relation("EquipmentToFile")
   events Event[] @relation("EquipmentToEvent")
+  workorders WorkOrder[] @relation("EquipmentToWO")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -114,4 +115,43 @@ model RecurrenceRule {
   updatedAt DateTime @updatedAt
 
   @@index([eventId])
+}
+
+model WorkOrder {
+  id String @id @default(uuid())
+  name String
+  description String
+  equipmentId String
+  equipment Equipment @relation("EquipmentToWO", fields: [equipmentId], references: [id])
+  startDate DateTime
+  finishDate DateTime
+  defectAct DefectAct[] @relation("WorkOrderToDefect")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([equipmentId])
+}
+
+model DefectAct {
+  id String @id @default(uuid())
+  workOrderId String
+  workOrder WorkOrder @relation("WorkOrderToDefect", fields: [workOrderId], references: [id])
+  defect Defect[] @relation("DefectActToDefect")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workOrderId])
+}
+
+model Defect {
+  id String @id @default(uuid())
+  defectactId String
+  defectact DefectAct @relation("DefectActToDefect", fields: [defectactId], references: [id])
+  description String
+  reason String
+  correctiveAction String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([defectactId])
 }

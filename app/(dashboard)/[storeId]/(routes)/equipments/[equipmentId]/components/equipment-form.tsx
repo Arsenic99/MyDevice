@@ -29,12 +29,17 @@ import { DialogModal } from "@/components/modals/dialog-modal"
 import { DataTable } from "@/components/ui/data-table"
 import { ColumnDef } from "@tanstack/react-table"
 import { EventModal } from "@/components/modals/event-modal"
+import GenerateQR from "@/components/generateqr"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { EditModal } from "@/components/modals/edit-modal"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 const formSchema = z.object({
     name: z.string().min(1),
     categoryId: z.string().min(1),
     serialNumber: z.string().min(0),
-    inventoryNumber: z.string().min(0),
+    inventoryNumber: z.string().min(0)
 });
 
 type EquipmentFormValues = z.infer<typeof formSchema>
@@ -62,13 +67,14 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [openEvent, setOpenEvent] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [edit, setEdit] = useState(initialData ? false : true);
 
-    const title = initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудование';
-    const description = initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудования';
+    const title = !edit ? "Паспортные данные оборудования" : initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудование';
+    const description = !edit ? "Паспортные данные оборудования" : initialData ? 'Редактировать данные оборудования' : 'Добавить новое оборудования';
     const toastMessage = initialData ? 'Данные обновлены.' : 'Оборудование добавлено.';
     const action = initialData ? 'Сохранить изменения' : 'Добавить';
-
     const defaultValues = initialData ? {
         ...initialData,
     } : {
@@ -77,13 +83,23 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
         serialNumber: '',
         inventoryNumber: '',
     }
-
     const form = useForm<EquipmentFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues
     });
 
-    const onSubmit = async (data: EquipmentFormValues) => {
+    const onChange = () => {
+        edit ? setOpenEdit(true) : setOpenEdit(false)
+        setEdit(!edit);
+    }
+
+    const onClose = () => { //function to close Edit modal
+        setOpenEdit(false);
+        window.location.reload();
+    }
+
+
+    const onSubmit = async (data: EquipmentFormValues) => { // fuction to submit inputted data
         try {
             setLoading(true);
             if (initialData) {
@@ -97,20 +113,44 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
         } catch (error: any) {
             toast.error('Something went wrong.');
         } finally {
+            setOpenEdit(false);
+            setEdit(false);
             setLoading(false);
         }
     };
 
-    const onDelete = async () => {
+    const onSubmitEvent = async (event:any, params:any) => { //function to submit event data
+        if (!event.title || !event.frequency || !event.startDay) return toast.error("Fill blanks");
+        try {
+            const data = new FormData()
+            data.set('title', event.title)
+            data.set('frequency', event.frequency)
+            data.set('interval', event.interval)
+            data.set('startDay', event.startDay.toString())
+            data.set('endDay', (event.endDay || '').toString())
+            data.set('equipmentId', params.equipmentId)
+            await fetch(`/api/${params.storeId}/events`, {
+                method: 'POST',
+                body: data
+            })
+            onClose();
+        } catch (e: any) {
+            console.error(e)
+        }
+    }
+
+    const onDelete = async () => { // function to delete equipment
         try {
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/equipments/${params.equipmentId}`);
             router.push(`/${params.storeId}/equipments`);
-            router.refresh();
             toast.success('Product deleted.');
+            router.refresh();
         } catch (error: any) {
             toast.error('Something went wrong.');
         } finally {
+            setOpenEdit(false);
+            setEdit(false);
             setLoading(false);
             setOpen(false);
         }
@@ -118,47 +158,75 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
 
     return (
         <>
-            <AlertModal
+            <AlertModal // Modal to confirm equipment delete
                 isOpen={open}
                 onClose={() => setOpen(false)}
                 onConfirm={onDelete}
                 loading={loading}
             />
-            <DialogModal
+            <DialogModal // Modal to add file
                 isOpen={openDialog}
                 onClose={() => setOpenDialog(false)}
                 loading={loading}
             />
-            <EventModal
+            <EventModal // Modal to create event
                 isOpen={openEvent}
                 onClose={() => setOpenEvent(false)}
+                loading={loading}
+                onConfirm={(event)=>onSubmitEvent(event, params)}
+            />
+            <EditModal // Modal to confirm equipment edit
+                isOpen={openEdit}
+                onClose={onClose}
+                onConfirm={form.handleSubmit(onSubmit)}
                 loading={loading}
             />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
                 <div className="flex items-center justify-between gap-5">
                     {
-                        initialData && <Button size="sm" onClick={() => setOpenDialog(!openDialog)}>
-                            Добавить файл
-                        </Button>
+                        initialData && <div className="flex items-center gap-1">
+                            <Switch id="editMode" checked={edit} onCheckedChange={onChange} />
+                            <Label htmlFor="editMode">Редактировать</Label>
+                        </div>
                     }
-
                     {
-                        initialData && <Button size="sm" onClick={() => setOpenEvent(!openEvent)}>
-                            Добавить событие
-                        </Button>
+                        initialData && <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">Действие</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        <Button size="sm" className="w-full" onClick={() => setOpenDialog(!openDialog)}>
+                                            Добавить файл
+                                        </Button>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Button size="sm" className="w-full" onClick={() => setOpenEvent(!openEvent)}>
+                                            Добавить график ТО
+                                        </Button>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Button size="sm" className="w-full" onClick={() => { router.push(`/${params.storeId}/workorders?equipmentId=${params.equipmentId}`) }}>
+                                            Добавить заказ-наряд
+                                        </Button>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Button
+                                            disabled={loading}
+                                            className="w-full"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => setOpen(true)}
+                                        >
+                                            Удалить оборудование
+                                        </Button>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     }
-
-                    {initialData && (
-                        <Button
-                            disabled={loading}
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => setOpen(true)}
-                        >
-                            <Trash className="h-4 w-4" />
-                        </Button>
-                    )}
                 </div>
             </div>
             <Separator />
@@ -172,7 +240,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Наименование</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Наименование оборудования" {...field} />
+                                        <Input autoComplete="true" disabled={loading || !edit} placeholder="Наименование оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -185,7 +253,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Серийный номер</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Серийный номер оборудования" {...field} />
+                                        <Input disabled={loading || !edit} placeholder="Серийный номер оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -198,7 +266,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Инвентарный номер</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Инвентарный номер оборудования" {...field} />
+                                        <Input disabled={loading || !edit} placeholder="Инвентарный номер оборудования" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -210,7 +278,7 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Категория</FormLabel>
-                                    <Select disabled={loading} onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                                    <Select disabled={loading || !edit} onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue defaultValue={field.value} placeholder="Выберите категорию" />
@@ -226,11 +294,20 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
                                 </FormItem>
                             )}
                         />
-                    </div>
-                    <Button disabled={loading} className="ml-auto" type="submit">
-                        {action}
-                    </Button>
+                        {
+                            initialData &&  <div>
+                                                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">QR Код</span>
+                                                <GenerateQR serialNumber={`/${params.storeId}/equipments/${params.equipmentId}`} />
+                                            </div>
 
+                        }
+                    </div>
+                    {
+                        edit &&
+                        <Button disabled={loading} className="ml-auto" type="submit">
+                            {action}
+                        </Button>
+                    }
 
                     {
                         initialData && (
@@ -253,15 +330,6 @@ export const EquipmentForm: React.FC<EquipmentFormProps> = ({
     );
 };
 
-type FileColumn = {
-    id: string;
-    fileName: string;
-    path: string;
-    equipmentId: string;
-    createdAt: Date;
-    timeTo: string;
-}
-
 const handleClick = async (id: string, equipmentId: string, fileName: string) => {
     try {
         await axios.delete(`/api/f065a399-bef3-4b56-8215-d3c05758facc/upload/${equipmentId}/${id}/${fileName}`);
@@ -272,6 +340,15 @@ const handleClick = async (id: string, equipmentId: string, fileName: string) =>
         toast.error("Ошибка при удалении файла");
     }
 
+}
+
+type FileColumn = {
+    id: string;
+    fileName: string;
+    path: string;
+    equipmentId: string;
+    createdAt: Date;
+    timeTo: string;
 }
 
 const columns: ColumnDef<FileColumn>[] = [

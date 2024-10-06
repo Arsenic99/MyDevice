@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -16,10 +16,10 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-import { EquipmentColumn } from "./columns";
+import { WorkOrderColumn } from "./columns";
 
 interface CellActionProps {
-    data: EquipmentColumn;
+    data: WorkOrderColumn;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({
@@ -30,12 +30,13 @@ export const CellAction: React.FC<CellActionProps> = ({
     const router = useRouter();
     const params = useParams();
 
+    const equipmentId = useSearchParams().get("equipmentId")
     const onConfirm = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/${params.storeId}/equipments/${data.id}`);
-            toast.success('Equipment deleted.');
-            router.push(`/${params.storeId}/equipments`);
+            await axios.delete(`/api/${params.storeId}/workorder/${data.id}`);
+            toast.success('Work order deleted.');
+            router.push(`/${params.storeId}/workorders`);
             router.refresh();
         } catch (error) {
             toast.error('Something went wrong');
@@ -47,7 +48,7 @@ export const CellAction: React.FC<CellActionProps> = ({
 
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id);
-        toast.success('Equipment ID copied to clipboard.');
+        toast.success('Work order ID copied to clipboard.');
     }
 
     return (
@@ -70,10 +71,10 @@ export const CellAction: React.FC<CellActionProps> = ({
                     <DropdownMenuItem
                         onClick={() => onCopy(data.id)}
                     >
-                        <Copy className="mr-2 h-4 w-4" /> Копировать ID
+                        <Copy className="mr-2 h-4 w-4" /> Копирования Id
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        onClick={() => router.push(`/${params.storeId}/equipments/${data.id}`)}
+                        onClick={() => router.push(`/${params.storeId}/workorders/${data.id}?equipmentId=${equipmentId}`)}
                     >
                         <Edit className="mr-2 h-4 w-4" /> Редактировать
                     </DropdownMenuItem>

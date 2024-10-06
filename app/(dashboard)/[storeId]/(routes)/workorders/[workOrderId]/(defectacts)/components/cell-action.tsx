@@ -1,12 +1,11 @@
 "use client";
 
 import axios from "axios";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useParams, useRouter } from "next/navigation";
 
-import { AlertModal } from "@/components/modals/alert-modal";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -15,39 +14,40 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { AlertModal } from "@/components/modals/alert-modal";
 
-import { EquipmentColumn } from "./columns";
+import { DefectActColumn } from "./columns";
 
 interface CellActionProps {
-    data: EquipmentColumn;
+    data: DefectActColumn;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({
     data,
 }) => {
-    const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
     const router = useRouter();
     const params = useParams();
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const onConfirm = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/${params.storeId}/equipments/${data.id}`);
-            toast.success('Equipment deleted.');
-            router.push(`/${params.storeId}/equipments`);
+            await axios.delete(`/api/${params.storeId}/defectacts/${data.id}`);
+            toast.success('DefectAct deleted.');
+            router.push(`/${params.storeId}/workorders/${data.workOrderId}`);
             router.refresh();
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error('Make sure you removed all categories using this DefectAct first.');
         } finally {
-            setLoading(false);
             setOpen(false);
+            setLoading(false);
         }
     };
 
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id);
-        toast.success('Equipment ID copied to clipboard.');
+        toast.success('DefectAct ID copied to clipboard.');
     }
 
     return (
@@ -73,7 +73,7 @@ export const CellAction: React.FC<CellActionProps> = ({
                         <Copy className="mr-2 h-4 w-4" /> Копировать ID
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        onClick={() => router.push(`/${params.storeId}/equipments/${data.id}`)}
+                        onClick={() => router.push(`/${params.storeId}/defectacts/${data.id}`)}
                     >
                         <Edit className="mr-2 h-4 w-4" /> Редактировать
                     </DropdownMenuItem>

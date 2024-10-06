@@ -3,27 +3,19 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 
-import { CellAction } from "./cell-action"
 import { Button } from "@/components/ui/button";
+import { CellAction } from "./cell-action";
 
-export type EquipmentColumn = {
+export type WorkOrderColumn = {
     id: string;
-    serialNumber: string;
-    inventoryNumber: string;
     name: string;
-    category: string;
-    location: string;
+    description: string;
+    startDate: Date;
+    finishDate: Date;
+    equipmentId: string;
 }
 
-export const columns: ColumnDef<EquipmentColumn>[] = [
-    {
-        accessorKey: "serialNumber",
-        header: "Серийный номер",
-    },
-    {
-        accessorKey: "inventoryNumber",
-        header: "Инвентарный номер",
-    },
+export const columns: ColumnDef<WorkOrderColumn>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
@@ -41,12 +33,16 @@ export const columns: ColumnDef<EquipmentColumn>[] = [
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "category",
-        header: "Категория",
+        accessorKey: "description",
+        header: "Описание",
     },
     {
-        accessorKey: "location",
-        header: "Объект",
+        accessorKey: "startDate",
+        header: "Дата начала",
+    },
+    {
+        accessorKey: "finishDate",
+        header: "Дата окончания",
     },
     {
         id: "actions",

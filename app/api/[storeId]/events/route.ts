@@ -58,7 +58,7 @@ export async function POST(
                 freq: freq ? freq : 'daily',
                 interval: Number(interval) ? Number(interval) : 1,
                 dtstart: new Date(Date.parse(startDay)).toISOString().substring(0, 10),
-                until: endDay ? new Date(Date.parse(endDay)).toISOString().substring(0, 10) : '',
+                until: new Date(Date.parse(endDay)).toISOString().substring(0, 10),
             }
         })
 
