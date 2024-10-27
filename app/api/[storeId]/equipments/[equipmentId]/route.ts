@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { unlink, rm } from 'fs/promises'
 import prismadb from "@/lib/prismadb";
+import {DELETE as DELETEWORKORDER} from "../../workorder/[workOrderId]/route"
 
 export async function GET(
     req: Request,
@@ -77,6 +78,18 @@ export async function DELETE(
                 equipmentId: params.equipmentId
             }
         })
+
+        const workOrders = await prismadb.workOrder.findMany({
+            where:{
+                equipmentId: params.equipmentId
+            }
+        })
+
+        const workOrdersIds = workOrders.map((item)=>item.id)
+
+        for (const workOrdersId of workOrdersIds) {
+            await DELETEWORKORDER(req, { params: {workOrderId: workOrdersId, storeId: params.storeId, equipmentId: params.equipmentId}})
+        }
 
         await prismadb.workOrder.deleteMany({
             where:{

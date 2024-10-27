@@ -3,10 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { CellAction } from "./cell-action"
+import { WorkOrder } from "@prisma/client"
 
 export type DefectActColumn = {
     id: string,
-    workOrderId: string
+    workOrderId: string,
+    workOrder: {
+        equipmentId: string
+    }
 }
 
 export const defectActColumns: ColumnDef<DefectActColumn>[] = [

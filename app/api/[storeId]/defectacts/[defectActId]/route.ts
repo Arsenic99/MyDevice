@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
+import {DELETE as DELETEREPAIRACTS} from "../../repairacts/[repairActId]/route"
 
 export async function GET(
     req: Request,
@@ -41,6 +42,18 @@ export async function DELETE(
 
         if (!storeByUserId) {
             return new NextResponse("Unauthorized", { status: 405 });
+        }
+
+        const repairacts = await prismadb.repairAct.findMany({
+            where:{
+                defectactId: params.defectActId
+            }
+        })
+
+        const repairactsIds = repairacts.map(repairacts => repairacts.id)
+
+        for(const repairactsId of repairactsIds){
+            await DELETEREPAIRACTS(req, { params: { repairActId: repairactsId, storeId: params.storeId } } )
         }
 
         await prismadb.defect.deleteMany({

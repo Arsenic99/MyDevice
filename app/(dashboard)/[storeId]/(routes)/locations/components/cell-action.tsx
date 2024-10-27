@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import { phrase } from "@/lib/lang"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -75,12 +76,12 @@ export const CellAction: React.FC<CellActionProps> = ({
                     <DropdownMenuItem
                         onClick={() => router.push(`/${params.storeId}/locations/${data.id}`)}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Update
+                        <Edit className="mr-2 h-4 w-4" /> {phrase.EDIT.ru}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => setOpen(true)}
                     >
-                        <Trash className="mr-2 h-4 w-4" /> Delete
+                        <Trash className="mr-2 h-4 w-4" /> {phrase.DELETE.ru}
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { ApiList } from "@/components/ui/api-list";
 
 import { EquipmentColumn, columns } from "./columns";
+import { phrase } from "@/lib/lang";
 
 interface EquipmentsClientProps {
     data: EquipmentColumn[];
@@ -25,7 +26,7 @@ export const EquipmentsClient: React.FC<EquipmentsClientProps> = ({
             <div className="flex items-center justify-between">
                 <Heading title={`Оборудования (${data.length})`} description="Управляйте оборудованиями вашей компании" />
                 <Button onClick={() => router.push(`/${params.storeId}/equipments/new`)}>
-                    <Plus className="mr-2 h-4 w-4" /> Add New
+                    <Plus className="mr-2 h-4 w-4" /> {phrase.ADD_NEW.ru}
                 </Button>
             </div>
             <Separator />

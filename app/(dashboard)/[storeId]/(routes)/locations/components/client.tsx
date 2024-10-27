@@ -8,6 +8,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { ApiList } from "@/components/ui/api-list";
+import { phrase } from "@/lib/lang";
 
 import { columns, LocationColumn } from "./columns";
 
@@ -24,9 +25,9 @@ export const LocationClient: React.FC<LocationClientProps> = ({
     return (
         <>
             <div className="flex items-center justify-between">
-                <Heading title={`Locations (${data.length})`} description="Manage locations for your store" />
+                <Heading title={`Объекты (${data.length})`} description="Управляйте объектами вашей компании" />
                 <Button onClick={() => router.push(`/${params.storeId}/locations/new`)}>
-                    <Plus className="mr-2 h-4 w-4" /> Add New
+                    <Plus className="mr-2 h-4 w-4" /> {phrase.ADD_NEW.ru}
                 </Button>
             </div>
             <Separator />

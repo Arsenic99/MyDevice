@@ -12,6 +12,7 @@ import { ApiList } from "@/components/ui/api-list";
 import { WorkOrderColumn, columns } from "./columns";
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { phrase } from "@/lib/lang";
 
 interface WorkOrdersClientProps {
     data: WorkOrderColumn[];
@@ -34,7 +35,7 @@ export const WorkOrdersClient: React.FC<WorkOrdersClientProps> = ({
             <div className="flex items-center justify-between">
                 <Heading title={`Заказ-наряды (${data.length})`} description="Управляйте заказ-нарядами вашей компании" />
                 <Button onClick={() => router.push(`/${params.storeId}/workorders/new?equipmentId=${equipmentId}`)}>
-                    <Plus className="mr-2 h-4 w-4" /> Добавить новый
+                    <Plus className="mr-2 h-4 w-4" /> {phrase.ADD_NEW.ru}
                 </Button>
             </div>
             <Breadcrumb>

@@ -21,7 +21,7 @@ export const columns: ColumnDef<LocationColumn>[] = [
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     size={"noPadding"}
                 >
-                    Name
+                    Наименование
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             )
@@ -30,7 +30,7 @@ export const columns: ColumnDef<LocationColumn>[] = [
     },
     {
         accessorKey: "responsiblePerson",
-        header: "Responsible person",
+        header: "Ответственное лицо",
     },
     {
         id: "actions",

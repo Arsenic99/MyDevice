@@ -7,15 +7,20 @@ import {
 import axios from "axios";
 import Link from "next/link";
 
-const DashboardPage = async () => {
-    const locations = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/locations`);
-    const categories = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/categories`);
-    const equipments = await axios.get(`${process.env.URL}/api/f065a399-bef3-4b56-8215-d3c05758facc/equipments`);
+const DashboardPage = async ({
+    params
+}:{
+    params:{storeId: string}
+}) => {
+    const locations = await axios.get(`${process.env.URL}/api/${params.storeId}/locations`);
+    const categories = await axios.get(`${process.env.URL}/api/${params.storeId}/categories`);
+    const equipments = await axios.get(`${process.env.URL}/api/${params.storeId}/equipments`);
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">
                 <Accordion type="single" collapsible className="w-full">
                     {
+                        locations.data.length == 0 ? <div>No equipment available</div> :
                         locations.data.slice().sort((a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)).map((item: { name: string, id: string }, index: number) => (
                             <AccordionItem value={`item-${index + 1}`} key={index}>
                                 <AccordionTrigger>{item.name}</AccordionTrigger>

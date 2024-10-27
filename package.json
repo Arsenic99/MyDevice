@@ -52,6 +52,7 @@
     "react-hot-toast": "^2.4.1",
     "react-qr-code": "^2.0.15",
     "react-qr-reader": "^3.0.0-beta-1",
+    "react-to-print": "^3.0.2",
     "rrule": "^2.8.1",
     "shadcn": "^2.1.0",
     "switch": "^0.0.0",

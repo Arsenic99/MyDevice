@@ -34,6 +34,18 @@ export async function DELETE(
 ) {
     try {
         
+        await prismadb.maintenanceAct.deleteMany({
+            where:{
+                workOrderId: params.workOrderId
+            }
+        })
+
+        await prismadb.repairAct.deleteMany({
+            where:{
+                workOrderId: params.workOrderId
+            }
+        })
+
         await prismadb.defectAct.deleteMany({
             where:{
                 workOrderId: params.workOrderId

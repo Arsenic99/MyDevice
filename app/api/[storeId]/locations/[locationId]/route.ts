@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { NextResponse } from "next/server";
+import {DELETE as DELETECATEGORY} from "../../categories/[categoryId]/route"
 
 export async function GET(
     req: Request,
@@ -74,6 +75,18 @@ export async function DELETE(
 
         if (!params.locationId) {
             return new NextResponse("Location id is required", { status: 400 });
+        }
+
+        const categories = await prismadb.category.findMany({
+            where:{
+                locationId: params.locationId
+            }
+        })
+
+        const categoriesIds = categories.map(category => category.id)
+
+        for(const categoriesId of categoriesIds){
+            await DELETECATEGORY(req, { params: {categoryId: categoriesId, storeId: params.storeId}})
         }
 
         const location = await prismadb.location.deleteMany({

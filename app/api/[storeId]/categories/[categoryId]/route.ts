@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import {DELETE as DELETEEQUIPMENT} from '../../equipments/[equipmentId]/route'
 
 import prismadb from "@/lib/prismadb";
-import axios from "axios";
 
 export async function GET(
     req: Request,

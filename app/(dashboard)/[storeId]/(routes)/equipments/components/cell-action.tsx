@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { EquipmentColumn } from "./columns";
+import { phrase } from "@/lib/lang";
 
 interface CellActionProps {
     data: EquipmentColumn;
@@ -75,12 +76,12 @@ export const CellAction: React.FC<CellActionProps> = ({
                     <DropdownMenuItem
                         onClick={() => router.push(`/${params.storeId}/equipments/${data.id}`)}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Редактировать
+                        <Edit className="mr-2 h-4 w-4" /> {phrase.EDIT.ru}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => setOpen(true)}
                     >
-                        <Trash className="mr-2 h-4 w-4" /> Удалить
+                        <Trash className="mr-2 h-4 w-4" /> {phrase.DELETE.ru}
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

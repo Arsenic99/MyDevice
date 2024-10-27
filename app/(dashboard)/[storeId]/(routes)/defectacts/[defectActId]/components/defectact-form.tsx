@@ -43,24 +43,31 @@ export const DefectActForm: React.FC<DefectActFormProps> = ({
                 defectactId: params.defectActId
             })
             toast.success('Дефект создан.');
+            router.refresh();
             setDefect((prev:Defect)=>({
                 ...prev,
                 description: '',
                 reason: '',
                 correctiveAction: ''
             }))
-            setOpenDefect(false);
             router.refresh();
+            setOpenDefect(false);
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const onDownload = async() => {
+        router.push(`/${params.storeId}/document/defectact/${params.defectActId}`)
+        // const url = `/api/${params.storeId}/document/${params.defectActId}`;
+        // window.open(url, '_blank');
     }
 
     const onDelete = async () => {
         try {
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/defectacts/${params.defectActId}`);
-            router.push(`/${params.storeId}/DefectActs`);
+            router.push(`/${params.storeId}/workorders/${initialData?.workOrderId}?equipmentId=${initialData?.workOrder.equipment.id}`);
             router.refresh();
             toast.success('Work order deleted.');
         } catch (error: any) {
@@ -97,7 +104,13 @@ export const DefectActForm: React.FC<DefectActFormProps> = ({
             />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
-                {initialData &&
+                {initialData && <div className="flex items-center gap-2">
+                    <Button 
+                        size='sm'
+                        onClick={()=>onDownload()}
+                    >
+                        Скачать дефектный акт
+                    </Button>
                     <Button
                         disabled={loading}
                         variant="destructive"
@@ -106,6 +119,8 @@ export const DefectActForm: React.FC<DefectActFormProps> = ({
                     >
                         <Trash className="h-4 w-4" />
                     </Button>
+                </div>
+                    
                 }
             </div>
             {

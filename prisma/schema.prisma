@@ -126,10 +126,22 @@ model WorkOrder {
   startDate DateTime
   finishDate DateTime
   defectAct DefectAct[] @relation("WorkOrderToDefect")
+  repairAct RepairAct[] @relation("WorkOrderToRepair")
+  maintenanceAct MaintenanceAct[] @relation("WorkOrderToMaintenance")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([equipmentId])
+}
+
+model MaintenanceAct {
+  id String @id @default(uuid())
+  workOrderId String
+  workOrder WorkOrder @relation("WorkOrderToMaintenance", fields: [workOrderId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workOrderId])
 }
 
 model DefectAct {
@@ -137,6 +149,7 @@ model DefectAct {
   workOrderId String
   workOrder WorkOrder @relation("WorkOrderToDefect", fields: [workOrderId], references: [id])
   defect Defect[] @relation("DefectActToDefect")
+  repairact RepairAct [] @relation("DefectActToRepairAct")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -154,4 +167,33 @@ model Defect {
   updatedAt DateTime @updatedAt
 
   @@index([defectactId])
+}
+
+model RepairAct {
+  id String @id @default(uuid())
+  workOrderId String
+  workOrder WorkOrder @relation("WorkOrderToRepair", fields: [workOrderId], references: [id])
+  defectactId String
+  defectact DefectAct @relation("DefectActToRepairAct", fields: [defectactId], references: [id])
+  repair Repair[] @relation("RepairActToRepair")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workOrderId])
+  @@index([defectactId])
+}
+
+model Repair {
+  id String @id @default(uuid())
+  repairactId String
+  repairact RepairAct @relation("RepairActToRepair", fields: [repairactId], references: [id])
+  description String
+  action String
+  materials String
+  tools String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([repairactId])
 }

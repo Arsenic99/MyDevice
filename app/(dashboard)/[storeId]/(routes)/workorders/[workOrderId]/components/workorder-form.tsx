@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { CalendarIcon, Trash } from "lucide-react"
-import { DefectAct, WorkOrder } from "@prisma/client"
+import { DefectAct, MaintenanceAct, RepairAct, WorkOrder } from "@prisma/client"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
@@ -34,6 +34,9 @@ import { EditModal } from "@/components/modals/edit-modal"
 import { DataTable } from "@/components/ui/data-table"
 import { defectActColumns } from "../(defectacts)/components/columns"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { repairActColumns } from "../(repairacts)/components/columns"
+import { RepairModal } from "@/components/modals/repair-modal"
+import { maintenanceActColumns } from "../(maintenanceacts)/components/columns"
 
 const formSchema = z.object({
     name: z.string().min(2),
@@ -45,21 +48,27 @@ const formSchema = z.object({
 type WorkOrderFormValues = z.infer<typeof formSchema>
 
 interface WorkOrderFormProps {
-    initialData: WorkOrder & {equipment: {name:string}} | null;
-    defectActs: DefectAct[];
+    initialData: WorkOrder & { equipment: { name: string } } | null;
+    defectActs: (DefectAct & { workOrder: {equipmentId: string} })[];
+    repairActs: (RepairAct & { workOrder: {equipmentId: string} })[];
+    maintenanceActs: (MaintenanceAct & { workOrder: {equipmentId: string} })[];
 };
 
 export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
     initialData,
     defectActs,
+    repairActs,
+    maintenanceActs
 }) => {
     const params = useParams();
     const equipmentId = useSearchParams().get('equipmentId');
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const [openRepair, setOpenRepair] = useState(false)
     const [openEditModal, setOpenEditModal] = useState(false);
     const [edit, setEdit] = useState(initialData ? false : true);
     const [loading, setLoading] = useState(false);
+    const [selected, setSelected] = useState('');
 
     const title = !edit ? 'Заказ-наряд' : initialData ? 'Редактировать заказ-наряд' : 'Создать заказ-наряд';
     const description = '';
@@ -92,13 +101,35 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         }
     };
 
-    const onCreate = async() => { //Create new defect act
-        try{
-            await axios.post(`/api/${params.storeId}/defectacts`, {workOrderId: params.workOrderId});
+    const onCreateMaintenance = async () => {
+        try {
+            await axios.post(`/api/${params.storeId}/maintenanceacts`, { workOrderId: params.workOrderId });
             router.refresh();
-            toast.success('Заказ наряд создан');
-        } catch (error:any){
+            toast.success('Акт ТО создан');
+        } catch (error:any) {
+            toast.error('Something went wrong during adding new maintenance act.')
+        }
+    }
+
+    const onCreateDefect = async () => { //Create new defect act
+        try {
+            await axios.post(`/api/${params.storeId}/defectacts`, { workOrderId: params.workOrderId });
+            router.refresh();
+            toast.success('Дефектный акт создан');
+        } catch (error: any) {
             toast.error('Something went wrong during adding new defect act.');
+        }
+    }
+
+    const onCreateRepair = async () => { //Create new repair act
+        try {
+            await axios.post(`/api/${params.storeId}/repairacts`, { workOrderId: params.workOrderId, defectactId: selected });
+            router.refresh();
+            toast.success('Акт ремонтных работ создан');
+            setSelected('');
+            setOpenRepair(false);
+        } catch (error: any) {
+            toast.error('Пожалуйста выбери дефектный акт по которому вы делаете ремонт!');
         }
     }
 
@@ -116,7 +147,7 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
         try {
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/workorder/${params.workOrderId}`);
-            router.push(`/${params.storeId}/workorders`);
+            router.push(`/${params.storeId}/workorders?equipmentId=${equipmentId}`);
             router.refresh();
             toast.success('Work order deleted.');
         } catch (error: any) {
@@ -141,6 +172,15 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                 onConfirm={form.handleSubmit(onSubmit)}
                 loading={loading}
             />
+            <RepairModal
+                isOpen={openRepair}
+                onClose={() => setOpenRepair(false)}
+                onConfirm={onCreateRepair}
+                loading={loading}
+                defectActs={defectActs}
+                selected={selected}
+                setSelected={setSelected}
+            />
             <div className="flex items-center justify-between">
                 <Heading title={title} description={description} />
                 {initialData &&
@@ -155,31 +195,31 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                             size="sm"
                             onClick={() => setOpen(true)}
                         >
-                            <Trash className="h-4 w-4"/>
+                            <Trash className="h-4 w-4" />
                         </Button>
                     </div>
                 }
             </div>
             {
                 initialData && <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href={`/${params.storeId}/equipments/${equipmentId}`}>{initialData?.equipment?.name}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href={`/${params.storeId}/workorders?equipmentId=${initialData.equipmentId}`}>Заказ-наряд</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{initialData.name}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href={`/${params.storeId}/equipments`}>Оборудования</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href={`/${params.storeId}/equipments/${equipmentId}`}>{initialData?.equipment?.name}</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href={`/${params.storeId}/workorders?equipmentId=${initialData.equipmentId}`}>Заказ-наряд</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{initialData.name}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
             }
             <Separator />
             <Form {...form}>
@@ -286,12 +326,29 @@ export const WorkOrderForm: React.FC<WorkOrderFormProps> = ({
                         </Button>}
                 </form>
             </Form>
-            <div className="flex justify-between items-center">
-                <Heading title={'Дефектные акты'} description={description} />
-                <Button onClick={onCreate}>Добавить дефектный акт</Button>
-            </div>
-            <DataTable searchKey="id" columns={defectActColumns} data={defectActs}/>
-            <Separator />
+            {
+                initialData && <>
+                    <div className="flex justify-between items-center">
+                        <Heading title={'Акт ТО'} description={description} />
+                        <Button onClick={onCreateMaintenance}>Добавить акт ТО</Button>
+                    </div>
+                    <DataTable searchKey="id" columns={maintenanceActColumns} data={maintenanceActs} />
+                    <Separator />
+
+                    <div className="flex justify-between items-center">
+                        <Heading title={'Дефектные акты'} description={description} />
+                        <Button onClick={onCreateDefect}>Добавить дефектный акт</Button>
+                    </div>
+                    <DataTable searchKey="id" columns={defectActColumns} data={defectActs} />
+                    <Separator />
+
+                    <div className="flex justify-between items-center">
+                        <Heading title={'Акты ремонтных работ'} description={description} />
+                        <Button onClick={() => setOpenRepair(true)}>Добавить акт ремонтных работ</Button>
+                    </div>
+                    <DataTable searchKey="id" columns={repairActColumns} data={repairActs} />
+                </>
+            }
         </>
     );
 };
